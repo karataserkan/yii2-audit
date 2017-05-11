@@ -2,6 +2,7 @@
 
 namespace bedezign\yii2\audit\models;
 
+use bedezign\yii2\audit\Audit;
 use bedezign\yii2\audit\components\db\ActiveRecord;
 use bedezign\yii2\audit\components\Helper;
 use Yii;
@@ -154,8 +155,7 @@ class AuditEntry extends ActiveRecord
 
         $this->route = $app->requestedAction ? $app->requestedAction->uniqueId : null;
         if ($request instanceof \yii\web\Request) {
-            $user = $app->user;
-            $this->user_id        = $user->isGuest ? 0 : $user->id;
+            $this->user_id        = Audit::getInstance()->getUserId();
             $this->ip             = $request->userIP;
             $this->ajax           = $request->isAjax;
             $this->request_method = $request->method;
@@ -175,10 +175,9 @@ class AuditEntry extends ActiveRecord
         $request = $app->request;
 
         if (!$this->user_id && $request instanceof \yii\web\Request) {
-            $user = $app->user;
-            $this->user_id = $user->isGuest ? 0 : $user->id;
+            $this->user_id = Audit::getInstance()->getUserId();
         }
-	
+
         $this->duration = microtime(true) - YII_BEGIN_TIME;
         $this->memory_max = memory_get_peak_usage();
         return $this->save(false, ['duration', 'memory_max', 'user_id']);
@@ -198,6 +197,26 @@ class AuditEntry extends ActiveRecord
             'memory_max'     => Yii::t('audit', 'Memory'),
             'request_method' => Yii::t('audit', 'Request Method'),
         ];
+    }
+
+    /**
+     * @return bool
+     */
+    public function hasRelatedData()
+    {
+        if ($this->getLinkedErrors()->count()) {
+            return true;
+        }
+        if ($this->getJavascripts()->count()) {
+            return true;
+        }
+        if ($this->getMails()->count()) {
+            return true;
+        }
+        if ($this->getTrails()->count()) {
+            return true;
+        }
+        return false;
     }
 
 }

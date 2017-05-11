@@ -1,23 +1,57 @@
 # Changelog
 
-## 1.0.8 UNRELEASED
+## 1.0.12 Unreleased
 
+* Enh [#188](https://github.com/bedezign/yii2-audit/issues/188): Ignore attributes when they contain arrays
+* Enh [#191](https://github.com/bedezign/yii2-audit/issues/191): add an option to disable most common timestamp fields
+
+## 1.0.11 April 15, 2017
+
+* Bug: use correct database when running migrations if the database component is not "db"
+* Bug: check if the module has been installed (prevents errors prior to migration while installing)
+
+## 1.0.10 March 26, 2017
+
+* Bug [#201](https://github.com/bedezign/yii2-audit/issues/201): Fix migration on pgsql
+
+## 1.0.9 March 25, 2017
+
+* Enh [#200](https://github.com/bedezign/yii2-audit/issues/200): fix ID column name duplicating
+* Bug [#199](https://github.com/bedezign/yii2-audit/issues/199): Fix user id filtering
+* Enh [#195](https://github.com/bedezign/yii2-audit/issues/195): cleanup solo AuditEntry records
+* Enh [#194](https://github.com/bedezign/yii2-audit/issues/194): add ignoreKeys to RequestPanel to lower data usage
+* Enh [#193](https://github.com/bedezign/yii2-audit/issues/193): charts in panels shows "undefined"
+* Enh [#189](https://github.com/bedezign/yii2-audit/issues/189): enhance MailPanel
+* Bug [#187](https://github.com/bedezign/yii2-audit/issues/187): audit_mail table data too long
+* Enh [#185](https://github.com/bedezign/yii2-audit/issues/185): log config
+* Enh [#182](https://github.com/bedezign/yii2-audit/issues/182): Added ability to save overrided field with another name
+* Bug [#184](https://github.com/bedezign/yii2-audit/issues/184): Use full url for js log action
+* Bug [#180](https://github.com/bedezign/yii2-audit/issues/180): Fix dbPanel errors
+* Enh [#174](https://github.com/bedezign/yii2-audit/issues/174): Ability to use custom user id instead Yii::$app->user->id
+
+## 1.0.8 November 11, 2016
+
+* Bug [#172](https://github.com/bedezign/yii2-audit/issues/172): Declaration of getUrl() compatible with yii\debug\Panel::getUrl()
+* Enh [#171](https://github.com/bedezign/yii2-audit/issues/171): Override to save related record label instead of id in AuditTrail
 * Bug [#168](https://github.com/bedezign/yii2-audit/issues/168): On certain errors the ProfilePanel data is not saved 
 * Enh [#167](https://github.com/bedezign/yii2-audit/issues/167): Get parent model for audit trail
 
 ## 1.0.7 July 27, 2016
+
 * Bug [#162](https://github.com/bedezign/yii2-audit/issues/162): fix charts 
 * Bug [#160](https://github.com/bedezign/yii2-audit/issues/160): error when config is setup but tables are not present
 * Bug [#145](https://github.com/bedezign/yii2-audit/issues/145): Bootstrap Array to String conversion fix
 * Bug [#153](https://github.com/bedezign/yii2-audit/issues/153): save user_id on finalize function
 
 ## 1.0.6 March 21, 2016
+
 * Bug [#141](https://github.com/bedezign/yii2-audit/issues/141): PHP7: ErrorPanel should support Throwable
 * Enh [#140](https://github.com/bedezign/yii2-audit/issues/140): `AuditTrailSearch.field` should allow `array`
 * Enh [#138](https://github.com/bedezign/yii2-audit/issues/138): Allow `*` as prefix in route matching
 * Bug: LogPanels without messages should still work
 
 ## 1.0.5 October 28, 2015
+
 * Enh: Added `generateTrace()`-function to the `Helper` for external usage
 * Enh: ErrorPanel now avoids duplicate exception logging
 * Enh: Javascript logging sets the type to 'unknown' if none was specified

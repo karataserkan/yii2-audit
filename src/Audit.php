@@ -12,7 +12,6 @@ namespace bedezign\yii2\audit;
 
 use bedezign\yii2\audit\components\panels\Panel;
 use bedezign\yii2\audit\models\AuditEntry;
-use bedezign\yii2\audit\models\AuditError;
 use Yii;
 use yii\base\ActionEvent;
 use yii\base\Application;
@@ -103,6 +102,11 @@ class Audit extends Module
     public $userIdentifierCallback = false;
 
     /**
+     * @var string The callback to get a user id.
+     */
+    public $userIdCallback = false;
+
+    /**
      * @var string Will be called to translate text in the user filter into a (or more) user id's
      */
     public $userFilterCallback = false;
@@ -112,6 +116,12 @@ class Audit extends Module
      * `max_allowed_packet` errors when logging huge data quantities. Records will be saved per piece instead of all at once
      */
     public $batchSave = true;
+
+    /**
+     * @var array Default log levels to filter and process
+     */
+    public $logConfig = ['levels' => ['error', 'warning', 'info', 'profile']];
+
 
     /**
      * @var array|Panel[] list of panels that should be active/tracking/available during the auditing phase.
@@ -154,6 +164,11 @@ class Audit extends Module
     public $logTarget;
 
     /**
+     * @see \yii\debug\Module::$traceLine
+     */
+    public $traceLine = \yii\debug\Module::DEFAULT_IDE_TRACELINE;
+
+    /**
      * @var array
      */
     private $_corePanels = [
@@ -193,13 +208,24 @@ class Audit extends Module
         parent::init();
         $app = Yii::$app;
 
+        // check if the module has been installed (prevents errors while installing)
+        try {
+            $this->getDb()->getTableSchema(AuditEntry::tableName());
+        } catch (\Exception $e) {
+            return;
+        }
+
         // Before action triggers a new audit entry
         $app->on(Application::EVENT_BEFORE_ACTION, [$this, 'onBeforeAction']);
         // After request finalizes the audit entry.
         $app->on(Application::EVENT_AFTER_REQUEST, [$this, 'onAfterRequest']);
 
         // Activate the logging target
-        $this->logTarget = $app->getLog()->targets['audit'] = new LogTarget($this);
+        if (empty($app->getLog()->targets['audit'])) {
+            $this->logTarget = $app->getLog()->targets['audit'] = new LogTarget($this, $this->logConfig);
+        } else {
+            $this->logTarget = $app->getLog()->targets['audit'];
+        }
 
         // Boot all active panels
         $this->normalizePanelConfiguration();
@@ -277,7 +303,7 @@ class Audit extends Module
     /**
      * @param bool $create
      * @param bool $new
-     * @return AuditEntry|static
+     * @return AuditEntry
      */
     public function getEntry($create = false, $new = false)
     {
@@ -304,6 +330,17 @@ class Audit extends Module
             return call_user_func($this->userIdentifierCallback, $user_id);
         }
         return $user_id;
+    }
+
+    /**
+     * @return int|mixed|null|string
+     */
+    public function getUserId()
+    {
+        if ($this->userIdCallback && is_callable($this->userIdCallback)) {
+            return call_user_func($this->userIdCallback);
+        }
+        return (Yii::$app instanceof \yii\web\Application && Yii::$app->user) ? Yii::$app->user->id : null;
     }
 
     /**
