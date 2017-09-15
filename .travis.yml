@@ -1,7 +1,7 @@
 language: php
+dist: precise
 
 php:
-  - hhvm
   - 7.1
   - 7.0
   - 5.6
@@ -16,10 +16,17 @@ env:
     - DB=sqlite
 
 matrix:
+  include:
+    - php: hhvm
+      env: DB=mysql
+      dist: trusty
+    - php: hhvm
+      env: DB=sqlite
+      dist: trusty
   exclude:
     - php: hhvm
       env: DB=pgsql
-
+      
 branches:
   only:
     - master
